@@ -1,9 +1,19 @@
-import http.server
-import socketserver
+ 
+from typing import Text
+from aiohttp import web
 
-PORT=8080
-Handler=http.server.SimpleHTTPRequestHandler
+routes = web.RouteTableDef()
 
-with socketserver.TCPServer(("",PORT), Handler) as httpd:
-    print("Serving at port", PORT)
-    httpd.serve_forever()  
+async def html_response(document='a.txt'):
+    s = open(document, "r")
+    return web.Response(text=s.read(), content_type='text/html')
+
+@routes.get('/')
+async def hello(request):
+    return await html_response()
+
+app = web.Application()
+app.add_routes(routes)
+
+web.run_app(app)
+
